@@ -42,7 +42,7 @@ def add_bank():
         db.session.commit()
         banks = Bank.query.filter_by(user_id=session['user_id']).all()
         flash('Bank account added successfully!')
-        return render_template('add_Account.html', banks=back)
+        return render_template('add_Account.html', banks=banks)
     if back := Bank.query.filter_by(user_id=session['user_id']).all():
         # If the user already has bank accounts, render the form with existing accounts
         return render_template('add_Account.html', banks=back)
