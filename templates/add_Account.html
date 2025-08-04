@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flask HTMX + PostgreSQL</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1 class="text-primary">Users Management</h1>
+          <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+        </div>
+        <!-- go back -->
+        <div class="mb-4">
+          <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Go Back</a>
+        </div>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-info alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+   
+        <!-- Add Bank Form -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Add New Bank Account</h5>
+          </div>
+          <div class="card-body">
+            <form hx-post="/add-back" hx-swap="none" class="row g-3">
+              <div class="col-md-3">
+                <input type="text" name="back_name" class="form-control" placeholder="Bank Name" required>
+              </div>
+              <div class="col-md-2">
+                <input type="text" name="back_code" class="form-control" placeholder="account number" required>
+              </div>
+              <div class="col-md-3">
+                <input type="text" name="back_account" class="form-control" placeholder="Account name" required>
+              </div>
+       
+              <div class="col-md-1">
+                <select name="is_active" class="form-select">
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </select>
+              </div>
+              <div class="col-md-1">
+                <button type="submit" class="btn btn-success w-100" {% if banks %} disabled {% endif %}>Add</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+       
+
+        <!-- Banks List -->
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">My Bank Accounts</h5>
+          </div>
+          <div class="card-body">
+            {% if banks %}
+              <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                  <thead class="table-success">
+                    <tr>
+                      <th>Bank Name</th>
+                      <th>Bank Code</th>
+                      <th>Account Number</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for bank in banks %}
+                      <tr>
+                        <td>{{ bank.back_name or '-' }}</td>
+                        <td>{{ bank.back_code or '-' }}</td>
+                        <td>{{ bank.back_account or '-' }}</td>
+                        <td>${{ "%.2f"|format(bank.amount or 0) }}</td>
+                        <td>
+                          {% if bank.is_active %}
+                            <span class="badge bg-success">Active</span>
+                          {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="text-center text-muted">
+                <p>No bank accounts found. Add your first bank account!</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
